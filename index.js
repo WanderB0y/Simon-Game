@@ -14,26 +14,14 @@ let countLevel = 1;
 document.addEventListener('keypress', function(e){
     if(e.key === 'a'){
         goPlay = true;
+        goPlayGame();
     }else{
         errorInput();
     }
 })
 
-function errorInput () {
-    const audio = new Audio('./sounds/wrong.mp3');
-    audio.muted = false;
-    bodyColor.classList.add('red');
-
-    setTimeout(() => {
-        bodyColor.classList.remove('red')
-        audio.play();
-    }, 200)
-}
-
 greenButton.addEventListener('click', (e) => {
     animateClassListAndPlayAudio(greenButton, greenButton.getAttribute('id'));
-
-    goPlayTheGame();
 });
 
 redButton.addEventListener('click', (e) => {
@@ -44,10 +32,24 @@ yellowButton.addEventListener('click', (e) => {
     animateClassListAndPlayAudio(yellowButton, yellowButton.getAttribute('id'));
 });
 
-
 blueButton.addEventListener('click', (e) => {    
     animateClassListAndPlayAudio(blueButton, blueButton.getAttribute('id'));
 });
+
+const goPlayGame = () => {
+    if(goPlay){
+        levelTitle.textContent = `Level ${countLevel}`;
+        
+        levelIndication();
+        simulateClick(0, countLevel, arrayNumColours);
+
+        resetCurrentStats();
+
+        console.log("Set Up is Finished")
+    } else{
+        errorInput();
+    }
+}
 
 // Will simulate the click
 function simulateClick(i, level, arrayNumColours) {
@@ -87,6 +89,16 @@ function animateClassListAndPlayAudio(buttonColour, buttonColourID){
     }, 200)
 }
 
+function errorInput () {
+    const audio = new Audio('./sounds/wrong.mp3');
+    audio.muted = false;
+    bodyColor.classList.add('red');
+
+    setTimeout(() => {
+        bodyColor.classList.remove('red')
+        audio.play();
+    }, 200)
+}
 
 const generateRandNumber = function* () {
     yield Math.floor(Math.random() * 4)
@@ -94,16 +106,28 @@ const generateRandNumber = function* () {
 }
 
 function resetCurrentStats (){
-    errorInput();
     goPlay = false;
     arrayNumColours.splice(0, arrayNumColours.length);
     arrayNumColoursClone.splice(0, arrayNumColoursClone.length);
-    countLevel = 0;
+    countLevel = 1;
 }
 
 //Check if the game is playable
+const checkInputCorrect = () => {
+    for(let i = 0; i < level; i++){
+        if(arrayNumColours[i] !== arrayNumColoursClone[i]){
+            resetCurrentStats();
+        }
+    }
 
 
-for(let i = 0; i < countLevel; i++){
-    console.log(generateRandNumber().next().value);
 }
+ 
+
+
+const levelIndication = () => {
+    for(let i = 0; i < countLevel; i++){
+        arrayNumColours.push(generateRandNumber().next().value);
+    }
+}
+ 
