@@ -6,10 +6,10 @@ const levelTitle = document.querySelector('#level-title');
 const bodyColor = document.body;
  
 let arrayNumColours = [];
-let arrayNumColoursClone = [];
+let arrayNumColoursInput = [];
 let level = arrayNumColours.length;
 let goPlay = false;
-let countLevel = 1;
+let countLevel = 5;
 
 document.addEventListener('keypress', function(e){
     if(e.key === 'a'){
@@ -20,32 +20,76 @@ document.addEventListener('keypress', function(e){
     }
 })
 
+
+
 greenButton.addEventListener('click', (e) => {
     animateClassListAndPlayAudio(greenButton, greenButton.getAttribute('id'));
+
+    if(goPlay){
+        arrayNumColoursInput.push(0);
+        compareArray();
+        console.log(arrayNumColours)
+        console.log(arrayNumColoursInput)
+    }
 });
 
 redButton.addEventListener('click', (e) => {
     animateClassListAndPlayAudio(redButton, redButton.getAttribute('id'));
+    
+    if(goPlay){
+        arrayNumColoursInput.push(1);
+        compareArray();
+        console.log(arrayNumColours)
+        console.log(arrayNumColoursInput)
+    }
 });
 
 yellowButton.addEventListener('click', (e) => {
     animateClassListAndPlayAudio(yellowButton, yellowButton.getAttribute('id'));
+    
+    if(goPlay){
+        arrayNumColoursInput.push(2);
+        compareArray();
+        console.log(arrayNumColours)
+        console.log(arrayNumColoursInput)
+    }
 });
 
 blueButton.addEventListener('click', (e) => {    
     animateClassListAndPlayAudio(blueButton, blueButton.getAttribute('id'));
+    
+    if(goPlay){
+        arrayNumColoursInput.push(3);
+        compareArray();
+        console.log(arrayNumColours)
+        console.log(arrayNumColoursInput)
+    }
 });
+
+
+const compareArray = () => {
+    for(let i = 0; i < arrayNumColoursInput.length; i++){
+        if(arrayNumColours[i] !== arrayNumColoursInput[i]){
+            errorInput();
+            levelTitle.textContent = "Wrong Button";
+        }
+    }
+}
+
+
 
 const goPlayGame = () => {
     if(goPlay){
         levelTitle.textContent = `Level ${countLevel}`;
+
+        blueButton.style.pointerEvents = 'none'
         
         levelIndication();
-        simulateClick(0, countLevel, arrayNumColours);
 
-        resetCurrentStats();
-
-        console.log("Set Up is Finished")
+        setTimeout(() => {
+            blueButton.style.pointerEvents = 'auto';
+            console.log("Done")
+        }, simulateClick(0, countLevel, arrayNumColours));
     } else{
         errorInput();
     }
@@ -53,29 +97,35 @@ const goPlayGame = () => {
 
 // Will simulate the click
 function simulateClick(i, level, arrayNumColours) {
+    let time = 0;
     if (i < level) {
         switch(arrayNumColours[i]){
             case 0:
-                greenButton.click();
+                animateClassListAndPlayAudio(greenButton, greenButton.getAttribute('id'));
                 break;
             case 1:
-                redButton.click();
+                animateClassListAndPlayAudio(redButton, redButton.getAttribute('id'));
+    
                 break;
             case 2:
-                yellowButton.click();
+                animateClassListAndPlayAudio(yellowButton, yellowButton.getAttribute('id'));
                 break;
             case 3:
-                blueButton.click();
+                animateClassListAndPlayAudio(blueButton, blueButton.getAttribute('id'));
                 break;
             }
-    setTimeout(() => {
-        simulateClick(i + 1, level, arrayNumColours);
+        setTimeout(() => {
+            time += 1000;
+            console.log("Hello World");
+            simulateClick(i + 1, countLevel, arrayNumColours);
         }, 1000); // Waits for 1 second (1000 milliseconds) before the next call
+
     }
+    return time;
 }
 
 // This function will play the aiuddio an will animate particulr class
-function animateClassListAndPlayAudio(buttonColour, buttonColourID){
+const animateClassListAndPlayAudio = (buttonColour, buttonColourID) => {
     //Play Audio
     let colourAudio = `./sounds/${buttonColourID}.mp3`
     const audio = new Audio(colourAudio);
@@ -89,7 +139,7 @@ function animateClassListAndPlayAudio(buttonColour, buttonColourID){
     }, 200)
 }
 
-function errorInput () {
+const errorInput = () => {
     const audio = new Audio('./sounds/wrong.mp3');
     audio.muted = false;
     bodyColor.classList.add('red');
@@ -102,27 +152,16 @@ function errorInput () {
 
 const generateRandNumber = function* () {
     yield Math.floor(Math.random() * 4)
-
 }
 
-function resetCurrentStats (){
+const resetCurrentStats = () => {
     goPlay = false;
     arrayNumColours.splice(0, arrayNumColours.length);
-    arrayNumColoursClone.splice(0, arrayNumColoursClone.length);
+    arrayNumColoursInput.splice(0, arrayNumColoursInput.length);
     countLevel = 1;
 }
 
 //Check if the game is playable
-const checkInputCorrect = () => {
-    for(let i = 0; i < level; i++){
-        if(arrayNumColours[i] !== arrayNumColoursClone[i]){
-            resetCurrentStats();
-        }
-    }
-
-
-}
- 
 
 
 const levelIndication = () => {
